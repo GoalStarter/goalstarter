@@ -149,7 +149,7 @@ app.post("/login",async (req,res)=>{
             console.log(newUser.email)
             console.log(newUser.username)
             res.status(200).send({
-                method:'Post',
+                method:"Post",
                 idToken:token,
                 userid:newUser.id,
                 name:newUser.username,
@@ -173,7 +173,7 @@ app.post("/login",async (req,res)=>{
     catch(err){
         res.status(404).send({
             err:err.message,
-            message:'User did not insert successfully'
+            message:"User did not insert successfully"
         })
     }
     
