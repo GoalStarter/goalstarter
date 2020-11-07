@@ -80,10 +80,10 @@ app.get("/home", (req, res) => {
 
 app.get("/home/view_goals/:userid", async (req, res) => { 
     var userid = req.params.userid; 
-    fetchId = async (name) => {
+    var fetchId = async (name) => {
         return db.collection("users").findOne({"id" : name}, {"posts":1}).then((user) => user.posts); 
     };
-    fetchGoal = async (goalids, i) => {
+    var fetchGoal = async (goalids, i) => {
         return db.collection("goals").findOne({"id" : goalids[i]}).then((goal) => goal);
     };
     let goalids = await fetchId(userid); 
