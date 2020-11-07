@@ -6,9 +6,9 @@ const app = express();
 app.use(bodyparser.json());
 
 
-const notification_options = {
+const notificationOptions = {
     priority: "high",
     timeToLive: 60 * 60 * 24
   };
 
-module.exports={notification_options};
+module.exports={notificationOptions};

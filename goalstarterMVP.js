@@ -2,7 +2,7 @@ const MongoClient = require("mongodb").MongoClient;
 var express = require("express"); 
 var {AudienceClientID,client}=require("./app");
 const { admin } =require( "./config");
-var {notification_options}=require("./push");
+var {notificationOptions}=require("./push");
 const bodyParser=require("body-parser");
 const cors=require("cors");
 var app = express();
@@ -89,11 +89,11 @@ app.get("/home/view_goals/:userid", async (req, res) => {
     let goalids = await fetchId(userid); 
     console.log(goalids);
     var goals = [];
-    var post_length = 0; 
+    var postLength = 0; 
     if(goalids.length === 0) {
-        post_length = goalids.length; 
+        postLength = goalids.length; 
     } 
-    for(var i = 0; i < post_length; i++) {
+    for(var i = 0; i < postLength; i++) {
         let goal = await fetchGoal(goalids, i);
         // var d = Date.parse(goal.schedule[goal.status]);
         // var d_now = new Date(); 
@@ -178,7 +178,7 @@ app.post("/login",async (req,res) => {
    app.post("/firebase/notification", (req, res ) => {
     const  registrationToken = req.body.registrationToken;  
     const message = req.body.message;
-    const options =  notification_options;
+    const options =  notificationOptions;
     
       admin.messaging().sendToDevice(registrationToken, message, options)
       .then( (response) => {
@@ -195,7 +195,7 @@ app.post("/login",async (req,res) => {
 app.post("/home/create_goal/:userid", (req, res) => {
     //generate date string 
     var now = new Date(Date.now()); 
-    var date_string = `${months[now.getMonth()]} ${now.getDate()}, ${now.getFullYear()}`; 
+    var dateString = `${months[now.getMonth()]} ${now.getDate()}, ${now.getFullYear()}`; 
     //temporary postid is a concat of userid, date posted, and title of post. 
     var id = `${req.params.userid}${req.body.title}`;
     var userid = req.params.userid; 
@@ -222,7 +222,7 @@ app.post("/home/create_goal/:userid", (req, res) => {
         id, 
         title, 
         author, 
-        date_string, 
+        dateString, 
         content, 
         milestones, 
         schedule,
