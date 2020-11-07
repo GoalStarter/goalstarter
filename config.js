@@ -7,4 +7,4 @@ admin.initializeApp({
     databaseURL: "https://goalstarter.firebaseio.com"
   });
 
-module.exports.admin = admin
+module.exports.admin = admin; 

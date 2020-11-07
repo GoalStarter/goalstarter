@@ -1,15 +1,15 @@
 const MongoClient = require("mongodb").MongoClient;
 var express = require("express"); 
-var {AudienceClientID,client}=require('./app')
-const { admin } =require( './config')
-var {notification_options}=require('./push')
-const bodyParser=require('body-parser')
+var {AudienceClientID,client}=require('./app');
+const { admin } =require( './config');
+var {notification_options}=require('./push');
+const bodyParser=require('body-parser');
 const cors=require('cors');
 var app = express();
 app.use(express.json()); 
-app.use(cors())
-app.use(bodyParser.urlencoded({extended:false}))
-app.use(bodyParser.json())
+app.use(cors());
+app.use(bodyParser.urlencoded({extended:false}));
+app.use(bodyParser.json());
 
 
 const months = ["January", "February", "March", "April", "May", "June",
@@ -86,10 +86,10 @@ app.get('/home/view_goals/:userid', async (req, res) => {
     console.log("v3");  
     fetchId = async (name) => {
         return db.collection("users").findOne({"id" : name}, {"posts":1}).then(user=>user.posts); 
-    }
+    };
     fetchGoal = async (goalids, i) => {
         return db.collection("goals").findOne({"id" : goalids[i]}).then(goal=>goal);
-    }
+    };
     let goalids = await fetchId(userid); 
     console.log(goalids);
     var goals = [];
@@ -128,12 +128,12 @@ async function verify(token) {
         audience: AudienceClientID,  // Specify the CLIENT_ID of the app that accesses the backend
         // Or, if multiple clients access the backend:
         //[CLIENT_ID_1, CLIENT_ID_2, CLIENT_ID_3]
-    })
+    }); 
     const payload = ticket.getPayload();
   
-    newUser.id = ticket.getUserId()
-     newUser.email=payload['email']
-     newUser.username=payload['name']
+    newUser.id = ticket.getUserId();
+     newUser.email=payload['email'];
+     newUser.username=payload['name'];
      
     // If request specified a G Suite domain:
     // const domain = payload['hd'];

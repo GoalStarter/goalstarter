@@ -1,9 +1,9 @@
-const express=require('express') 
-const bodyparser= require( 'body-parser')
+const express=require('express'); 
+const bodyparser= require( 'body-parser');
 
 
-const app = express()
-app.use(bodyparser.json())
+const app = express();
+app.use(bodyparser.json());
 
 
 const notification_options = {
@@ -11,4 +11,4 @@ const notification_options = {
     timeToLive: 60 * 60 * 24
   };
 
-module.exports={notification_options}
+module.exports={notification_options};
