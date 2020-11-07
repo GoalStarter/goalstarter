@@ -1,10 +1,10 @@
 const MongoClient = require("mongodb").MongoClient;
 var express = require("express"); 
-var {AudienceClientID,client}=require('./app');
-const { admin } =require( './config');
-var {notification_options}=require('./push');
-const bodyParser=require('body-parser');
-const cors=require('cors');
+var {AudienceClientID,client}=require("./app");
+const { admin } =require( "./config");
+var {notification_options}=require("./push");
+const bodyParser=require("body-parser");
+const cors=require("cors");
 var app = express();
 app.use(express.json()); 
 app.use(cors());
@@ -75,13 +75,13 @@ MongoClient.connect("mongodb://localhost:27017", {useNewUrlParser: true, useUnif
 });  
 
 
-app.get('/home', (req, res) => {
+app.get("/home", (req, res) => {
     var userid = req.params.userid; 
     //var list = feed.getFeed(userid);
     res.send(list); 
 });
 
-app.get('/home/view_goals/:userid', async (req, res) => { 
+app.get("/home/view_goals/:userid", async (req, res) => { 
     var userid = req.params.userid; 
     console.log("v3");  
     fetchId = async (name) => {
@@ -132,14 +132,14 @@ async function verify(token) {
     const payload = ticket.getPayload();
   
     newUser.id = ticket.getUserId();
-     newUser.email=payload['email'];
-     newUser.username=payload['name'];
+     newUser.email=payload["email"];    
+     newUser.username=payload["name"];
      
     // If request specified a G Suite domain:
     // const domain = payload['hd'];
   }
 
-app.post('/login',async (req,res)=>{
+app.post("/login",async (req,res)=>{
     var token =req.body.idToken
      console.log(token)
     
@@ -180,7 +180,7 @@ app.post('/login',async (req,res)=>{
 }); 
 
 
-   app.post('/firebase/notification', (req, res)=>{
+   app.post("/firebase/notification", (req, res)=>{
     const  registrationToken = req.body.registrationToken
     const message = req.body.message
     const options =  notification_options
@@ -197,7 +197,7 @@ app.post('/login',async (req,res)=>{
 
 });
 
-app.post('/home/create_goal/:userid', (req, res) => {
+app.post("/home/create_goal/:userid", (req, res) => {
     //generate date string 
     var now = new Date(Date.now()); 
     var date_string = `${months[now.getMonth()]} ${now.getDate()}, ${now.getFullYear()}`; 
@@ -249,7 +249,7 @@ app.post('/home/create_goal/:userid', (req, res) => {
     res.status(200).send("goal created"); 
 });
 
-app.put('/home/comment/:userid', (req, res) => {
+app.put("/home/comment/:userid", (req, res) => {
 
     var comment = `${req.body.author} : ${req.body.comment}`;
     var id = req.body.id; 
@@ -274,7 +274,7 @@ app.put('/home/comment/:userid', (req, res) => {
     res.send("comment inserted"); 
 });
 
-app.put('/home/like/:userid', (req, res) => {
+app.put("/home/like/:userid", (req, res) => {
     var id = req.body.id; 
     var userid = req.params.userid; 
     var now = new Date(Date.now()); 
@@ -297,7 +297,7 @@ app.put('/home/like/:userid', (req, res) => {
     res.send("like recorded");  
 });
 
-app.put('/home/update_goal/updateone', async (req, res) => {
+app.put("/home/update_goal/updateone", async (req, res) => {
     var goalid = req.body.goalid; 
     var update = req.body.update; 
 
