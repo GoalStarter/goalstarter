@@ -81,10 +81,10 @@ app.get("/home", (req, res) => {
 app.get("/home/view_goals/:userid", async (req, res) => { 
     var userid = req.params.userid; 
     fetchId = async (name) => {
-        return db.collection("users").findOne({"id" : name}, {"posts":1}).then((user) =>user.posts); 
+        return db.collection("users").findOne({"id" : name}, {"posts":1}).then((user) => user.posts); 
     };
     fetchGoal = async (goalids, i) => {
-        return db.collection("goals").findOne({"id" : goalids[i]}).then((goal) =>goal);
+        return db.collection("goals").findOne({"id" : goalids[i]}).then((goal) => goal);
     };
     let goalids = await fetchId(userid); 
     console.log(goalids);
@@ -134,7 +134,7 @@ async function verify(token) {
     // const domain = payload['hd'];
   }
 
-app.post("/login",async (req,res) =>{
+app.post("/login",async (req,res) => {
     var token =req.body.idToken; 
      console.log(token);
     
@@ -175,7 +175,7 @@ app.post("/login",async (req,res) =>{
 }); 
 
 
-   app.post("/firebase/notification", (req, res ) =>{
+   app.post("/firebase/notification", (req, res ) => {
     const  registrationToken = req.body.registrationToken;  
     const message = req.body.message;
     const options =  notification_options;
