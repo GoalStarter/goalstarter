@@ -66,7 +66,7 @@ MongoClient.connect("mongodb://localhost:27017", {useNewUrlParser: true, useUnif
     });
         //create a collection for storing users. 
     db.createCollection("users", function(err, res) {
-        if(err) throw err; 
+        if(err) {throw err;}  
         console.log("User Collection Created\n"); 
     });
 
@@ -174,7 +174,7 @@ app.post("/login",async (req,res) =>{
         res.status(404).send({
             err:err.message,
             message:"User did not insert successfully"
-        })
+        }); 
     }
     
 }); 
@@ -257,11 +257,11 @@ app.put("/home/comment/:userid", (req, res) => {
     var now = new Date(Date.now()); 
     var date = `${now.getMonth()} ${now.getDay()}, ${now.getFullYear()}`;
 
-    db.collection("goals").updateOne({"id": id}, {$push: {
+    db.collection("goals").updateOne({id}, {$push: {
         "comments": comment
     },
         $set: {
-            "date": date
+            date
         }
     });
 
@@ -280,7 +280,7 @@ app.put("/home/like/:userid", (req, res) => {
     var now = new Date(Date.now()); 
     var date = `${now.getMonth()} ${now.getDay()}, ${now.getFullYear()}`;
 
-    db.collection("goals").updateOne({"id": id}, {$inc: {
+    db.collection("goals").updateOne({id}, {$inc: {
         "likes" : 1
     },
         $set: {
