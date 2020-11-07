@@ -54,7 +54,7 @@ const list = [
 
 //connect mongoclient 
 MongoClient.connect("mongodb://localhost:27017", {useNewUrlParser: true, useUnifiedTopology: true}, function(err, client) {
-    if(err) throw err; 
+    if(err) {throw err;}  
     console.log("GoalStarter Database created\n");
     //create a database
     db = client.db("dbtest"); 
@@ -85,16 +85,16 @@ app.get("/home/view_goals/:userid", async (req, res) => {
     var userid = req.params.userid; 
     console.log("v3");  
     fetchId = async (name) => {
-        return db.collection("users").findOne({"id" : name}, {"posts":1}).then(user=>user.posts); 
+        return db.collection("users").findOne({"id" : name}, {"posts":1}).then((user)=>user.posts); 
     };
     fetchGoal = async (goalids, i) => {
-        return db.collection("goals").findOne({"id" : goalids[i]}).then(goal=>goal);
+        return db.collection("goals").findOne({"id" : goalids[i]}).then((goal)=>goal);
     };
     let goalids = await fetchId(userid); 
     console.log(goalids);
     var goals = [];
     var post_length = 0; 
-    if(undefined != goalids && goalids.length) {
+    if(goalids.length == 0) {
         post_length = goalids.length; 
     }
     console.log(post_length); 
@@ -120,7 +120,7 @@ let newUser={
     "posts":[],
     "comments":[],
     "likes":[]
-  }
+  };
 
 async function verify(token) {
     const ticket = await client.verifyIdToken({
@@ -140,14 +140,14 @@ async function verify(token) {
   }
 
 app.post("/login",async (req,res)=>{
-    var token =req.body.idToken
-     console.log(token)
+    var token =req.body.idToken; 
+     console.log(token);
     
         try {
-            await verify(token)
-            console.log(newUser.id)
-            console.log(newUser.email)
-            console.log(newUser.username)
+            await verify(token);
+            console.log(newUser.id);
+            console.log(newUser.email);
+            console.log(newUser.username);
             res.status(200).send({
                 method:"Post",
                 idToken:token,
@@ -155,7 +155,7 @@ app.post("/login",async (req,res)=>{
                 name:newUser.username,
                 email:newUser.email
                
-               })
+               }); 
                
         } catch (error) {
             res.status(401).send({
@@ -181,14 +181,14 @@ app.post("/login",async (req,res)=>{
 
 
    app.post("/firebase/notification", (req, res)=>{
-    const  registrationToken = req.body.registrationToken
-    const message = req.body.message
-    const options =  notification_options
+    const  registrationToken = req.body.registrationToken;  
+    const message = req.body.message;
+    const options =  notification_options;
     
       admin.messaging().sendToDevice(registrationToken, message, options)
-      .then( response => {
+      .then( (response) => {
 
-       res.status(200).send("Notification sent successfully")
+       res.status(200).send("Notification sent successfully"); 
        
       })
       .catch( error => {
