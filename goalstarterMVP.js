@@ -61,7 +61,7 @@ MongoClient.connect("mongodb://localhost:27017", {useNewUrlParser: true, useUnif
 
     //create a collectiion for storing goals
     db.createCollection("goals", function(err, res) {
-        if(err) throw err; 
+        if(err) {throw err;} 
         console.log("Goal Collection Created\n"); 
     });
         //create a collection for storing users. 
@@ -85,16 +85,16 @@ app.get("/home/view_goals/:userid", async (req, res) => {
     var userid = req.params.userid; 
     console.log("v3");  
     fetchId = async (name) => {
-        return db.collection("users").findOne({"id" : name}, {"posts":1}).then((user)=>user.posts); 
+        return db.collection("users").findOne({"id" : name}, {"posts":1}).then((user) =>user.posts); 
     };
     fetchGoal = async (goalids, i) => {
-        return db.collection("goals").findOne({"id" : goalids[i]}).then((goal)=>goal);
+        return db.collection("goals").findOne({"id" : goalids[i]}).then((goal) =>goal);
     };
     let goalids = await fetchId(userid); 
     console.log(goalids);
     var goals = [];
     var post_length = 0; 
-    if(goalids.length == 0) {
+    if(goalids.length === 0) {
         post_length = goalids.length; 
     }
     console.log(post_length); 
@@ -139,7 +139,7 @@ async function verify(token) {
     // const domain = payload['hd'];
   }
 
-app.post("/login",async (req,res)=>{
+app.post("/login",async (req,res) =>{
     var token =req.body.idToken; 
      console.log(token);
     
@@ -160,7 +160,7 @@ app.post("/login",async (req,res)=>{
         } catch (error) {
             res.status(401).send({
                 error:error.message
-               })
+               });
         }
         
       
@@ -180,7 +180,7 @@ app.post("/login",async (req,res)=>{
 }); 
 
 
-   app.post("/firebase/notification", (req, res)=>{
+   app.post("/firebase/notification", (req, res ) =>{
     const  registrationToken = req.body.registrationToken;  
     const message = req.body.message;
     const options =  notification_options;
@@ -191,7 +191,7 @@ app.post("/login",async (req,res)=>{
        res.status(200).send("Notification sent successfully"); 
        
       })
-      .catch( error => {
+      .catch((error) => {
           console.log(error);
       });
 
@@ -225,20 +225,20 @@ app.post("/home/create_goal/:userid", (req, res) => {
     }
 
     var goal = {
-        "id": id, 
-        "title": title, 
-        "author": author, 
-        "date": date_string, 
-        "content": content, 
-        "milestones": milestones, 
-        "schedule": schedule,
-        "tag": tag, 
-        "comments": comments, 
-        "likes": likes,
-        "updates" : updates, 
-        "status" : status,
-        "needupdate" : needupdate
-    }
+        id, 
+        title, 
+        author, 
+        date_string, 
+        content, 
+        milestones, 
+        schedule,
+        tag, 
+        comments, 
+        likes,
+        updates, 
+        status,
+        needupdate
+    }; 
     db.collection("goals").insertOne(goal); 
     db.collection("users").updateOne({"id": userid}, {
         $push: {
