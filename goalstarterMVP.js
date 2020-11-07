@@ -55,19 +55,16 @@ const list = [
 //connect mongoclient 
 MongoClient.connect("mongodb://localhost:27017", {useNewUrlParser: true, useUnifiedTopology: true}, function(err, client) {
     if(err) {throw err;}  
-    console.log("GoalStarter Database created\n");
     //create a database
     db = client.db("dbtest"); 
 
     //create a collectiion for storing goals
     db.createCollection("goals", function(err, res) {
-        if(err) {throw err;} 
-        console.log("Goal Collection Created\n"); 
+        if(err) {throw err;}  
     });
         //create a collection for storing users. 
     db.createCollection("users", function(err, res) {
         if(err) {throw err;}  
-        console.log("User Collection Created\n"); 
     });
 
  
@@ -83,7 +80,6 @@ app.get("/home", (req, res) => {
 
 app.get("/home/view_goals/:userid", async (req, res) => { 
     var userid = req.params.userid; 
-    console.log("v3");  
     fetchId = async (name) => {
         return db.collection("users").findOne({"id" : name}, {"posts":1}).then((user) =>user.posts); 
     };
@@ -96,8 +92,7 @@ app.get("/home/view_goals/:userid", async (req, res) => {
     var post_length = 0; 
     if(goalids.length === 0) {
         post_length = goalids.length; 
-    }
-    console.log(post_length); 
+    } 
     for(var i = 0; i < post_length; i++) {
         let goal = await fetchGoal(goalids, i);
         // var d = Date.parse(goal.schedule[goal.status]);
@@ -201,7 +196,6 @@ app.post("/home/create_goal/:userid", (req, res) => {
     //generate date string 
     var now = new Date(Date.now()); 
     var date_string = `${months[now.getMonth()]} ${now.getDate()}, ${now.getFullYear()}`; 
-    console.log(req); 
     //temporary postid is a concat of userid, date posted, and title of post. 
     var id = `${req.params.userid}${req.body.title}`;
     var userid = req.params.userid; 
@@ -284,7 +278,7 @@ app.put("/home/like/:userid", (req, res) => {
         "likes" : 1
     },
         $set: {
-            "date" : date 
+            date 
         }
     });
     
