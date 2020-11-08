@@ -87,7 +87,7 @@ app.get("/home/view_goals/:userid", async (req, res) => {
         return db.collection("goals").findOne({"id" : goalids[i]}).then((goal) => goal);
     };
     let goalids = await fetchId(userid); 
-    console.log(goalids);
+    //console.log(goalids);
     var goals = [];
     var postLength = 0; 
     if(goalids.length === 0) {
@@ -100,7 +100,7 @@ app.get("/home/view_goals/:userid", async (req, res) => {
         // if(d_now.now() >= d) {
         //     goal.needupdate = 1; 
         // }
-        console.log(goal); 
+        //console.log(goal); 
         JSON.stringify(goal); 
         goals.push(goal); 
     }
@@ -136,13 +136,13 @@ async function verify(token) {
 
 app.post("/login",async (req,res) => {
     var token =req.body.idToken; 
-     console.log(token);
+     //console.log(token);
     
         try {
             await verify(token);
-            console.log(newUser.id);
-            console.log(newUser.email);
-            console.log(newUser.username);
+            //console.log(newUser.id);
+            //console.log(newUser.email);
+            //console.log(newUser.username);
             res.status(200).send({
                 method:"Post",
                 idToken:token,
@@ -187,7 +187,7 @@ app.post("/login",async (req,res) => {
        
       })
       .catch((error) => {
-          console.log(error);
+          //console.log(error);
       });
 
 });
