@@ -57,6 +57,7 @@ MongoClient.connect("mongodb://localhost:27017", {useNewUrlParser: true, useUnif
     if(err) {throw err;}  
     //create a database
     db = client.db("dbtest"); 
+    console.log("starting"); 
 
     //create a collectiion for storing goals
     db.createCollection("goals", function(err, res) {
@@ -83,18 +84,18 @@ app.get("/home/view_goals/:userid", async (req, res) => {
     var fetchId = async (name) => {
         return db.collection("users").findOne({"id" : name}, {"posts":1}).then((user) => user.posts); 
     };
-    var fetchGoal = async (goalids, i) => {
-        return db.collection("goals").findOne({"id" : goalids[i]}).then((goal) => goal);
+    var fetchGoal = async (goalid) => {
+        return db.collection("goals").findOne({"id" : goalid}).then((goal) => goal);
     };
     let goalids = await fetchId(userid); 
-    //console.log(goalids);
+    console.log(goalids);
     var goals = [];
     var postLength = 0; 
-    if(goalids.length === 0) {
+    if(goalids.length > 0) {
         postLength = goalids.length; 
     } 
     for(var i = 0; i < postLength; i++) {
-        let goal = await fetchGoal(goalids, i);
+        let goal = await fetchGoal(goalids[i]);
         // var d = Date.parse(goal.schedule[goal.status]);
         // var d_now = new Date(); 
         // if(d_now.now() >= d) {
@@ -140,9 +141,9 @@ app.post("/login",async (req,res) => {
     
         try {
             await verify(token);
-            //console.log(newUser.id);
-            //console.log(newUser.email);
-            //console.log(newUser.username);
+            console.log(newUser.id);
+            console.log(newUser.email);
+            console.log(newUser.username);
             res.status(200).send({
                 method:"Post",
                 idToken:token,
@@ -159,11 +160,11 @@ app.post("/login",async (req,res) => {
         }
         
       
-     try{
+    try {
         const result=await db.collection("users").findOne({"id":newUser.id});
-       if(result==null){ 
-      db.collection("users").insertOne(newUser);
-       }
+        if(result==null){ 
+        db.collection("users").insertOne(newUser);
+        }
     }
     catch(err){
         res.status(404).send({
