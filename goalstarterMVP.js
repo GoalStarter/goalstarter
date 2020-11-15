@@ -16,7 +16,7 @@ const months = ["January", "February", "March", "April", "May", "June",
 "July", "August", "September", "October", "November", "December"
 ];
 
-const list = [
+const init = [
     {id: "test1",
     title: "I want to pass CPEN 331", 
     author: "Eric", 
@@ -26,7 +26,10 @@ const list = [
     schedule: [], 
     tag: "undergraduate",
     comments: ["Good Job", "I hope I pass too"], 
-    likes: 12
+    likes: 12,
+    updates : [],
+    status : 0,
+    needupdate : 0
     }, 
     {id: "test2", 
     title: "I want to get Diamond in League", 
@@ -37,7 +40,10 @@ const list = [
     schedule: [], 
     tag: "LoL",
     comments: ["Good Luck", "You suck"], 
-    likes: 0
+    likes: 0,
+    updates : [],
+    status : 0,
+    needupdate : 0
     }, 
     {id: "test3",
     title: "I want to become the Prime Minister of Canada", 
@@ -48,9 +54,24 @@ const list = [
     schedule: [], 
     tag: "employment",
     comments: ["I voted for you", "What qualifies you for this position?"], 
-    likes: 100
+    likes: 100,
+    updates: [],
+    status : 0,
+    needupdate : 0
     }
 ];
+
+const test_user = {
+    "id":"123",
+    "username":"Tor Ammodt",
+    "email":"de1soc@gmail.com",
+    "friendslist":[],
+    "posts":[],
+    "comments":[],
+    "likes":[]
+}; 
+
+const tags= ["weightloss", "competitive sports", "running", "weight training", "medical school", "employment", "undergraduate", "masters/PhD", "diet", "LoL", "Valorant", "Overwatch"];
 
 //connect mongoclient 
 MongoClient.connect("mongodb://localhost:27017", {useNewUrlParser: true, useUnifiedTopology: true}, function(err, client) {
@@ -68,33 +89,67 @@ MongoClient.connect("mongodb://localhost:27017", {useNewUrlParser: true, useUnif
         if(err) {throw err;}  
     });
 
- 
+    for(var i = 0; i < 3; i++) { 
+        db.collection("goals").insertOne(init[i]); 
+    }
 
+    db.collection("users").insertOne(test_user); 
 });  
 
-
-app.get("/home", (req, res) => {
+app.get("/home/:userid", async (req, res) => {
     var userid = req.params.userid; 
-    //var list = feed.getFeed(userid);
-    res.send(list); 
+    console.log(userid);
+
+    var fetchUser = async (name) => {
+        return db.collection("users").findOne({"id" : name}).then((user) => user); 
+    };
+    var fetchGoal = async (goal) => {
+        return db.collection("goals").findOne({"id" : goal}).then((goal) => goal); 
+    };
+    var fetchGoalbyTag = async (goal_tag, limit) => {
+        return db.collection("goals").findOne({"tag" : goal_tag}).limit(limit).then((goal) => goal); 
+    };
+    var feed = []; 
+    var limit = 10; 
+
+    //first add the most recent goal of each friend
+     
+    let user = await fetchUser(userid); 
+    console.log(user); 
+    let friends = user.friendslist; 
+    for(var i = 0; i < friends.length && feed.length < limit; i++) {
+        let friend = await fetchUser(friends[i]);  
+        var post = friend.posts[friend.posts.length - 1]; 
+        feed.push(post); 
+    }
+
+    if(user.posts.length > 0 && feed.length < limit) {
+        let id = user.posts[user.posts.length - 1]; 
+        let post = await fetchGoal(id); 
+        let tag = post.tag; 
+        let posts = fetchGoalbyTag(tag, limit - feed.length); 
+        feed.concat(posts);
+    }   
+
+    if(feed.length < limit) {
+        feed.concat(init); 
+    }
+
+    res.send(feed); 
 });
 
 app.get("/home/view_goals/:userid", async (req, res) => { 
-    var userid = req.params.userid; 
-    var fetchId = async (name) => {
-        return db.collection("users").findOne({"id" : name}, {"posts":1}).then((user) => user.posts); 
-    };
+    var userid = req.params.userid;
     var fetchGoal = async (goalid) => {
         return db.collection("goals").findOne({"id" : goalid}).then((goal) => goal);
     };
-    let goalids = await fetchId(userid); 
+    var fetchId = async (name) => {
+        return db.collection("users").findOne({"id" : name}, {"posts":1}).then((user) => user.posts); 
+    };
+    let goalids = await fetchId(userid);  
     console.log(goalids);
     var goals = [];
-    var postLength = 0; 
-    if(goalids.length > 0) {
-        postLength = goalids.length; 
-    } 
-    for(var i = 0; i < postLength; i++) {
+    for(var i = 0; i < goalids.length; i++) {
         let goal = await fetchGoal(goalids[i]);
         // var d = Date.parse(goal.schedule[goal.status]);
         // var d_now = new Date(); 
@@ -223,7 +278,7 @@ app.post("/home/create_goal/:userid", (req, res) => {
         id, 
         title, 
         author, 
-        dateString, 
+        date : dateString, 
         content, 
         milestones, 
         schedule,
@@ -292,21 +347,21 @@ app.put("/home/like/:userid", (req, res) => {
     res.send("like recorded");  
 });
 
-app.put("/home/update_goal/updateone", async (req, res) => {
-    var goalid = req.body.goalid; 
-    var update = req.body.update; 
+// app.put("/home/update_goal/updateone", async (req, res) => {
+//     var goalid = req.body.goalid; 
+//     var update = req.body.update; 
 
-    var step = await db.collection("goals").findOne({"id" : goalid}).status; 
-    step = step + 1; 
+//     var step = await db.collection("goals").findOne({"id" : goalid}).status; 
+//     step = step + 1; 
 
-    db.collection("goals").updateOne({"id": goalid}, {
-        $push: {"updates" : update},
-        $set: {
-            "status" : step,
-            "needupdate" : 0 
-        }
-    });
+//     db.collection("goals").updateOne({"id": goalid}, {
+//         $push: {"updates" : update},
+//         $set: {
+//             "status" : step,
+//             "needupdate" : 0 
+//         }
+//     });
 
-});
+// });
 
 module.exports = app; 
