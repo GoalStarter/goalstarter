@@ -107,7 +107,7 @@ app.get("/home/:userid", async (req, res) => {
         return db.collection("goals").findOne({"id" : goal}).then((goal) => goal); 
     };
     var fetchGoalbyTag = async (goal_tag, limit) => {
-        return db.collection("goals").findOne({"tag" : goal_tag}).limit(limit).then((goal) => goal); 
+        return db.collection("goals").findOne({"tag" : goal_tag}).limit(limit); 
     };
     var feed = []; 
     var limit = 10; 
