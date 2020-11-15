@@ -92,71 +92,49 @@ MongoClient.connect("mongodb://localhost:27017", {useNewUrlParser: true, useUnif
     for(var i = 0; i < 3; i++) { 
         db.collection("goals").insertOne(init[i]); 
     }
-
-    db.collection("users").insertOne(test_user); 
 });  
 
 app.get("/home/:userid", async (req, res) => {
     var userid = req.params.userid; 
     console.log(userid);
 
-    var fetchUser = async (name) => {
-        return db.collection("users").findOne({"id" : name}).then((user) => user); 
-    };
-    var fetchGoal = async (goal) => {
-        return db.collection("goals").findOne({"id" : goal}).then((goal) => goal); 
-    };
-    var fetchGoalbyTag = async (goal_tag, limit) => {
-        return db.collection("goals").findOne({"tag" : goal_tag}).limit(limit); 
-    };
     var feed = []; 
     var limit = 10; 
 
     //first add the most recent goal of each friend
      
-    let user = await fetchUser(userid); 
-    console.log(user); 
+    let user = await  db.collection("users").findOne({"id" : userid}); 
     let friends = user.friendslist; 
     for(var i = 0; i < friends.length && feed.length < limit; i++) {
-        let friend = await fetchUser(friends[i]);  
+        let friend = db.collection("users").findOne({"id" : userid});  
         var post = friend.posts[friend.posts.length - 1]; 
         feed.push(post); 
     }
 
     if(user.posts.length > 0 && feed.length < limit) {
         let id = user.posts[user.posts.length - 1]; 
-        let post = await fetchGoal(id); 
+        let post = await db.collection("goals").findOne({"id" : id}); 
         let tag = post.tag; 
-        let posts = fetchGoalbyTag(tag, limit - feed.length); 
-        feed.concat(posts);
+        let posts = await db.collection("goals").find({"tag" : tag}).limit(feed.length - limit).toArray(); 
+        console.log(posts); 
+        feed = feed.concat(posts);
     }   
 
     if(feed.length < limit) {
-        feed.concat(init); 
+        feed = feed.concat(init); 
     }
-
+    console.log(feed); 
     res.send(feed); 
 });
 
 app.get("/home/view_goals/:userid", async (req, res) => { 
     var userid = req.params.userid;
-    var fetchGoal = async (goalid) => {
-        return db.collection("goals").findOne({"id" : goalid}).then((goal) => goal);
-    };
-    var fetchId = async (name) => {
-        return db.collection("users").findOne({"id" : name}, {"posts":1}).then((user) => user.posts); 
-    };
-    let goalids = await fetchId(userid);  
+    let user = await db.collection("users").findOne({"id" : userid}, {"posts":1});  
+    let goalids = user.posts; 
     console.log(goalids);
     var goals = [];
     for(var i = 0; i < goalids.length; i++) {
-        let goal = await fetchGoal(goalids[i]);
-        // var d = Date.parse(goal.schedule[goal.status]);
-        // var d_now = new Date(); 
-        // if(d_now.now() >= d) {
-        //     goal.needupdate = 1; 
-        // }
-        //console.log(goal); 
+        let goal = await db.collection("goals").findOne({"id" : goalids[i]});
         JSON.stringify(goal); 
         goals.push(goal); 
     }
