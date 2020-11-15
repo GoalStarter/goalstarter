@@ -104,6 +104,9 @@ app.get("/home/:userid", async (req, res) => {
     //first add the most recent goal of each friend
      
     let user = await  db.collection("users").findOne({"id" : userid}); 
+    if(user === null) {
+        res.status(404).end(); 
+    }
     let friends = user.friendslist; 
     for(var i = 0; i < friends.length && feed.length < limit; i++) {
         let friend = db.collection("users").findOne({"id" : userid});  
@@ -248,7 +251,7 @@ app.post("/home/create_goal/:userid", (req, res) => {
     var needupdate = 0; 
 
     if(!title || !author || !content || !tag) {
-        res.status(400).send("request incomplete"); 
+        res.status(400).end(); 
         return;
     }
 
@@ -277,13 +280,18 @@ app.post("/home/create_goal/:userid", (req, res) => {
     res.status(200).send("goal created"); 
 });
 
-app.put("/home/comment/:userid", (req, res) => {
+app.put("/home/comment/:userid", async(req, res) => {
 
     var comment = `${req.body.author} : ${req.body.comment}`;
     var id = req.body.id; 
     var userid = req.params.userid; 
     var now = new Date(Date.now()); 
     var date = `${now.getMonth()} ${now.getDay()}, ${now.getFullYear()}`;
+
+    let checkuser = await db.collection("users").findOne({"id" : userid}); 
+    if(checkuser === null) {
+        res.status(404).end(); 
+    }
 
     db.collection("goals").updateOne({id}, {$push: {
         "comments": comment
@@ -302,11 +310,16 @@ app.put("/home/comment/:userid", (req, res) => {
     res.send("comment inserted"); 
 });
 
-app.put("/home/like/:userid", (req, res) => {
+app.put("/home/like/:userid", (req, res) => { 
     var id = req.body.id; 
     var userid = req.params.userid; 
     var now = new Date(Date.now()); 
     var date = `${now.getMonth()} ${now.getDay()}, ${now.getFullYear()}`;
+
+    let checkuser = await db.collection("users").findOne({"id" : userid}); 
+    if(checkuser === null) {
+        res.status(404).end(); 
+    }
 
     db.collection("goals").updateOne({id}, {$inc: {
         "likes" : 1
